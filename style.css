@@ -234,14 +234,20 @@ a { color: var(--accent); }
   margin-bottom: 6px;
 }
 .qbody pre {
-  background: #f7f8fa;
-  border: 1px solid var(--border);
+  background: #1e1e1e;
+  border: 1px solid #3a3a3a;
   border-radius: 5px;
   padding: 12px 14px;
   overflow-x: auto;
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
+  color: #d4d4d4;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.qbody pre code {
+  color: #d4d4d4;
+  white-space: pre;
 }
 .qbody .example-text {
   font-size: 14px;
