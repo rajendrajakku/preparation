@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD, Jenkins &amp; Docker Interview Questions | Interview Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="brand">Interview<span>Prep</span><span> by Rajendra Jakku</span></a>
+    <div class="navlinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="cv.html">My CV</a>
+      <a href="java.html">Java</a>
+      <a href="springboot.html">Spring Boot</a>
+      <a href="microservices.html">Microservices</a>
+      <a href="database.html">Database</a>
+      <a href="angular.html">Angular</a>
+      <a href="projects.html">Project Questions</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="aws.html">AWS</a>
+      <a href="coding.html">Coding Practice</a>
+      <a href="kafka.html">Kafka</a>
+    </div>
+  </div>
+</nav>
+<div class="pagehead">
+  <p class="eyebrow">CI/CD, JENKINS &amp; DOCKER</p>
+  <h1>CI/CD, Jenkins and Docker Interview Questions</h1>
+  <p>Build automation, testing, containerization, deployment pipelines, release strategies, security, and production troubleshooting.</p>
+  <span class="count" id="qcount">100 questions</span>
+</div>
+<div class="controls"><div class="search-wrap"><input type="text" id="searchInput" placeholder="Search questions, answers, or code..."></div><button class="btn" id="expandAll">Expand all</button><button class="btn" id="collapseAll">Collapse all</button></div>
+<div class="qlist"><div id="questionContainer"></div></div>
+<footer>Part of the Full Stack Java Developer interview prep reference. <a href="index.html">Back to all topics</a></footer>
+<script src="app.js"></script>
+<script>
+const cicdQuestions = [
+{q:'What is CI?',a:'Continuous Integration means developers merge small changes frequently and an automated build and test process validates every change.',ex:'Developer push -> Jenkins webhook -> compile -> unit tests -> quality gate.'},
+{q:'What is CD?',a:'Continuous Delivery keeps every validated change ready for release. Continuous Deployment goes further and automatically releases an approved change to production.',ex:'Delivery: manual production approval. Deployment: production release is automatic.'},
+{q:'What is a CI/CD pipeline?',a:'A pipeline is an automated sequence that checks out source code, builds it, tests it, packages it, scans it, and deploys it through environments.',ex:'Checkout -> Build -> Test -> Scan -> Docker image -> Deploy.'},
+{q:'What is Jenkins?',a:'Jenkins is an automation server used to orchestrate builds, tests, quality checks, artifact publishing, and deployments through pipelines.',ex:'A Jenkins controller schedules a pipeline on an available agent.'},
+{q:'What is a Jenkins controller?',a:'The controller manages Jenkins configuration, jobs, credentials, scheduling, and coordination. Heavy work should normally run on agents rather than the controller.',ex:'Controller assigns a Java build to a Linux agent.'},
+{q:'What is a Jenkins agent?',a:'An agent is a machine or container that executes pipeline steps. Labels allow a job to select an agent with the required tools.',ex:'docker-linux agent runs Maven and Docker commands.'},
+{q:'What is a Jenkins Pipeline?',a:'A Pipeline is code that defines the build and delivery workflow. It can be stored with the application as a Jenkinsfile and reviewed like source code.',ex:'pipeline { stages { stage("Build") { steps { sh "mvn package" } } } }'},
+{q:'Declarative versus scripted Jenkins Pipeline?',a:'Declarative Pipeline uses a structured, opinionated syntax that is easier to validate. Scripted Pipeline is more flexible Groovy code and is useful for complex dynamic logic.',ex:'Use declarative stages for normal delivery and a small script block for special logic.'},
+{q:'What is a Jenkinsfile?',a:'A Jenkinsfile is the version-controlled definition of a Jenkins Pipeline, including stages, agents, environment variables, approvals, and post actions.',ex:'Jenkinsfile is reviewed in the same pull request as the application change.'},
+{q:'Why store the Jenkinsfile in source control?',a:'It gives the pipeline version history, code review, repeatability, and a clear relationship between an application revision and its build process.',ex:'A release branch uses the Jenkinsfile that belongs to that branch.'},
+{q:'What is a Jenkins multibranch pipeline?',a:'It automatically discovers branches or pull requests and creates a pipeline for each one using the Jenkinsfile in that branch.',ex:'feature/payment gets an isolated validation job.'},
+{q:'How does a Jenkins webhook work?',a:'The source-control platform sends an HTTP notification after a push or pull request event. Jenkins then starts the matching job instead of polling repeatedly.',ex:'GitHub push -> webhook -> Jenkins build of main.'},
+{q:'What is a Jenkins freestyle job?',a:'A freestyle job is configured through the Jenkins UI with source control, build steps, and post-build actions. Pipelines are generally preferred because configuration is code.',ex:'Legacy job invokes mvn test and archives a report.'},
+{q:'What is a Jenkins stage?',a:'A stage is a named part of a pipeline that groups related steps and makes progress visible in Jenkins.',ex:'Stages: Checkout, Test, Image, Deploy.'},
+{q:'What is a Jenkins step?',a:'A step is an individual executable action inside a stage, such as running a shell command, archiving an artifact, or invoking another job.',ex:'sh "./mvnw test" is a shell step.'},
+{q:'How do you run stages in parallel?',a:'Declarative Pipeline supports parallel branches for independent work. Parallel execution reduces elapsed time, but shared resources and test isolation must be considered.',ex:'Unit tests, frontend tests, and static analysis run concurrently.'},
+{q:'How do you add a manual approval?',a:'Use an input or approval step after validation and before a sensitive deployment. Restrict approvers and record the decision in the build history.',ex:'input message: "Deploy to production?"'},
+{q:'What is a Jenkins post block?',a:'The post block performs actions after a stage or pipeline based on the result, such as always publishing reports, notifying failures, or cleaning workspaces.',ex:'post { always { junit "target/surefire-reports/*.xml" } }'},
+{q:'How do you clean a Jenkins workspace?',a:'Use workspace cleanup after a build or before checkout when stale files can affect results. Cleanup must not remove artifacts before they are archived or published.',ex:'deleteDir() in a post-always block.'},
+{q:'What are Jenkins credentials?',a:'Credentials are managed secrets such as tokens, SSH keys, usernames, passwords, or certificates. Pipelines should reference credential IDs rather than hard-code secret values.',ex:'withCredentials([string(credentialsId: "registry-token", variable: "TOKEN")])'},
+{q:'How should secrets be used in Jenkins?',a:'Store them in Jenkins Credentials or an external secret manager, inject them only for the required step, mask logs, and rotate them regularly.',ex:'A registry password is available only during docker push.'},
+{q:'How do you prevent secrets from appearing in logs?',a:'Use credential bindings and avoid echoing commands or variables containing secrets. Review shell tracing settings and Jenkins masking behavior.',ex:'Do not use sh "echo ${PASSWORD}".'},
+{q:'What is an artifact?',a:'An artifact is a versioned build output such as a JAR, Docker image, test report, or deployment manifest that can be promoted without rebuilding.',ex:'orders-service-1.8.2.jar is published to an artifact repository.'},
+{q:'What is artifact promotion?',a:'Promotion moves the same immutable artifact from one environment to another after approvals and checks, ensuring staging and production run identical bits.',ex:'Image digest tested in staging is promoted to production.'},
+{q:'What is a quality gate?',a:'A quality gate is a rule set that must pass before the pipeline continues, such as test coverage, vulnerability thresholds, or code-quality ratings.',ex:'Pipeline stops when a critical security issue is found.'},
+{q:'How do you run Maven in Jenkins?',a:'Use the project wrapper when available so the expected Maven version is reproducible, then run the required lifecycle goals and publish reports.',ex:'./mvnw clean verify'},
+{q:'What is the difference between mvn test and mvn verify?',a:'test runs unit tests. verify runs the lifecycle through verification and may include integration tests, quality checks, or packaging validation depending on the project.',ex:'Pull requests use test; release validation uses verify.'},
+{q:'How do you cache Maven dependencies?',a:'Cache the Maven repository on a persistent agent or use a repository proxy. The cache speeds builds but should be invalidated when dependency resolution becomes suspect.',ex:'Reuse ~/.m2 between isolated build containers.'},
+{q:'How do you publish test reports in Jenkins?',a:'Configure JUnit or equivalent publishers so test results remain visible even when a test stage fails. Always publish reports in a post block.',ex:'junit "**/target/surefire-reports/*.xml"'},
+{q:'How do you publish code coverage?',a:'Run a coverage tool such as JaCoCo, archive the XML or HTML report, and enforce a threshold that matches the project risk rather than chasing an arbitrary number.',ex:'JaCoCo report shows line and branch coverage.'},
+{q:'What is static code analysis?',a:'Static analysis inspects code without executing it to find bugs, code smells, insecure patterns, and maintainability issues.',ex:'SonarQube quality gate runs after unit tests.'},
+{q:'What is SAST?',a:'Static Application Security Testing scans source or bytecode for security weaknesses early in development.',ex:'A pipeline blocks a hard-coded credential finding.'},
+{q:'What is dependency scanning?',a:'Dependency scanning compares third-party libraries with vulnerability databases and identifies versions that require upgrade or mitigation.',ex:'The pipeline reports a vulnerable transitive Spring dependency.'},
+{q:'What is container image scanning?',a:'Image scanning checks the operating-system packages and application layers inside a Docker image for known vulnerabilities.',ex:'The release is blocked when the image has a critical CVE.'},
+{q:'What is Docker?',a:'Docker packages an application and its runtime dependencies into an image that runs as an isolated container using the host kernel.',ex:'The Spring Boot JAR runs consistently in development and CI.'},
+{q:'Image versus container?',a:'An image is an immutable packaged template. A container is a running or stopped instance created from that image with a writable runtime layer.',ex:'One image can create multiple service containers.'},
+{q:'What is a Dockerfile?',a:'A Dockerfile is a set of instructions that builds a Docker image, including the base image, files, environment defaults, and startup command.',ex:'FROM eclipse-temurin:21-jre followed by COPY app.jar.'},
+{q:'What is a Docker layer?',a:'Each Dockerfile instruction can create a cached filesystem layer. Stable instructions should come first so dependency layers are reused.',ex:'Copy pom.xml before source files to reuse dependency download cache.'},
+{q:'How do you write a small Docker image?',a:'Use a supported slim runtime image, multi-stage builds, a .dockerignore file, and only the files required at runtime.',ex:'Build with Maven, copy only the JAR into a JRE runtime stage.'},
+{q:'What is a multi-stage Docker build?',a:'It uses one stage to compile the application and another smaller stage to run it, leaving compilers and source files out of the final image.',ex:'Maven builder stage -> Java runtime stage.'},
+{q:'What is .dockerignore?',a:'It excludes unnecessary files from the Docker build context, reducing upload time and preventing local secrets or build outputs from entering an image.',ex:'.dockerignore excludes .git, target, node_modules, and .env.'},
+{q:'CMD versus ENTRYPOINT?',a:'ENTRYPOINT defines the main executable and CMD supplies default arguments. ENTRYPOINT is useful when the container has one fixed purpose.',ex:'ENTRYPOINT ["java", "-jar"] and CMD ["app.jar"].'},
+{q:'How do you pass configuration to a container?',a:'Pass environment-specific configuration through environment variables, mounted configuration, or a secret manager rather than baking secrets into the image.',ex:'SPRING_PROFILES_ACTIVE=prod is supplied at deployment time.'},
+{q:'Why should containers be immutable?',a:'An immutable container is replaced with a new version instead of being manually changed in place, making deployments repeatable and rollback predictable.',ex:'Deploy image digest sha256:abc instead of editing a running container.'},
+{q:'What is a Docker registry?',a:'A registry stores and distributes container images. It may be public or private and should enforce authentication, scanning, and retention policies.',ex:'Jenkins pushes registry.example.com/orders:1.8.2.'},
+{q:'Tag versus digest?',a:'A tag is a human-readable mutable label, while a digest identifies the exact image content. Production deployments should record or pin the digest.',ex:'orders:1.8.2 resolves to sha256:...'},
+{q:'How do you push an image securely?',a:'Authenticate Jenkins to the private registry using a scoped credential, build with a trusted base image, scan before push or promotion, and avoid putting credentials in the image.',ex:'docker login uses a Jenkins credential binding.'},
+{q:'What is Docker Compose?',a:'Docker Compose defines and runs a multi-container local environment, useful for developing a service with databases, brokers, and dependencies.',ex:'compose starts the API, PostgreSQL, and Redis together.'},
+{q:'How do you troubleshoot a failed container?',a:'Check the container status and logs, inspect environment and mounts, verify the command and port, reproduce locally, and inspect the image contents and resource limits.',ex:'docker logs orders-api and docker inspect orders-api.'},
+{q:'What is a health check?',a:'A health check measures whether an application is ready to serve traffic or alive enough to restart. It should test meaningful dependencies without becoming unnecessarily expensive.',ex:'/actuator/health/readiness returns UP after startup.'},
+{q:'Liveness versus readiness?',a:'Liveness asks whether the process should be restarted. Readiness asks whether it should receive traffic. A dependency outage generally should not cause a restart loop.',ex:'Database unavailable may make readiness fail while liveness remains healthy.'},
+{q:'What is blue-green deployment?',a:'Two production environments exist: blue serves traffic while green receives the new version. Traffic switches after validation and can switch back for rollback.',ex:'Route the load balancer from blue to green.'},
+{q:'What is canary deployment?',a:'Canary deployment sends a small percentage of traffic to the new version, monitors health and business metrics, and gradually increases traffic.',ex:'Deploy to 5%, then 25%, then 100% if error rate stays normal.'},
+{q:'What is rolling deployment?',a:'Rolling deployment replaces instances gradually so capacity remains available while the new version is introduced.',ex:'Update two service instances at a time.'},
+{q:'What is a feature flag?',a:'A feature flag separates code deployment from feature exposure, allowing controlled activation, testing, and quick disablement.',ex:'Enable the new payment screen only for internal users.'},
+{q:'How do you rollback a deployment?',a:'Keep previous immutable artifacts and deployment configuration, then redeploy the known-good version. Investigate and document the failed release afterward.',ex:'Rollback from image 1.8.3 to the recorded 1.8.2 digest.'},
+{q:'What is zero-downtime deployment?',a:'It updates an application without making the service unavailable by maintaining healthy capacity, compatible schema changes, and controlled traffic switching.',ex:'Readiness checks prevent traffic reaching a starting instance.'},
+{q:'How do database migrations fit into CI/CD?',a:'Migrations are versioned, reviewed, tested, and applied in a controlled step. Use backward-compatible expand-and-contract changes when old and new application versions overlap.',ex:'Add nullable column -> deploy code -> backfill -> enforce constraint later.'},
+{q:'How do you handle failed migrations?',a:'Stop promotion, preserve the failure details, assess whether the migration is safely reversible, and use a tested recovery plan. Avoid blindly rerunning destructive scripts.',ex:'A migration is idempotent and records its version in a migration table.'},
+{q:'What is a deployment artifact?',a:'It is the exact immutable package promoted through environments, such as a JAR, container digest, Helm chart, or infrastructure plan.',ex:'Staging and production use the same image digest.'},
+{q:'What is environment parity?',a:'Environment parity means development, staging, and production use comparable runtime versions, configuration patterns, and dependencies so testing represents reality.',ex:'The same Java major version and container base family are used in staging and production.'},
+{q:'How do you manage environment variables?',a:'Keep non-secret configuration external to the image and provide environment-specific values through deployment configuration or a secret manager.',ex:'Database URL changes by environment without rebuilding the image.'},
+{q:'What is a pipeline parameter?',a:'A parameter is an explicit input such as environment or release version. Validate it and restrict dangerous values instead of allowing arbitrary shell input.',ex:'DEPLOY_ENV accepts only dev, staging, or production.'},
+{q:'How do you prevent accidental production deployment?',a:'Use protected branches, separate credentials, approval gates, environment permissions, change records, and a pipeline rule that only trusted revisions can deploy.',ex:'Only the main release job can access production credentials.'},
+{q:'What is a Jenkins shared library?',a:'A shared library contains reusable pipeline functions and conventions so many repositories can use standardized build, scan, and deploy logic.',ex:'buildJavaService() is maintained once and used by multiple services.'},
+{q:'How do you version a shared pipeline library?',a:'Version it like a product, test changes, and pin consumers to a known version when stability matters. Avoid silently changing every pipeline.',ex:'@Library("platform-ci@v3") _'},
+{q:'How do you parallelize microservice builds?',a:'Build independent services in parallel, use separate workspaces, and publish uniquely versioned artifacts. Aggregate results before deployment.',ex:'farmer-service and notification-service build concurrently.'},
+{q:'How do you handle monorepo pipelines?',a:'Detect changed paths, run targeted validation where safe, and retain shared contract or integration tests for cross-service changes.',ex:'A docs-only change skips the Java image build.'},
+{q:'How do you handle a polyrepo pipeline?',a:'Each service owns its pipeline and artifact version, while shared libraries or deployment repositories coordinate compatible releases.',ex:'Payment service releases independently from farmer service.'},
+{q:'What is a contract test?',a:'A contract test verifies that a provider and consumer agree on request and response behavior without requiring a full end-to-end environment.',ex:'Gateway contract verifies the procurement endpoint status and fields.'},
+{q:'What is an integration test in CI?',a:'It tests interaction with real or controlled dependencies such as a database, broker, or service. Containers can provide repeatable dependencies in the pipeline.',ex:'Testcontainers starts PostgreSQL for repository tests.'},
+{q:'What is an end-to-end test?',a:'It validates a complete user journey across the UI, gateway, services, and dependencies. It is valuable but slower and more environment-sensitive than unit tests.',ex:'Register farmer -> verify -> submit procurement lot.'},
+{q:'How do you reduce flaky tests?',a:'Remove timing assumptions, isolate test data, control external dependencies, wait on conditions rather than sleeps, and capture diagnostics before retrying.',ex:'Await a readiness condition instead of sleeping for five seconds.'},
+{q:'Should failed tests be retried?',a:'Retries can identify infrastructure flakiness but must not hide product failures. Track retries and quarantine unstable tests with an owner and deadline.',ex:'Retry a network setup failure once, but report a deterministic assertion failure immediately.'},
+{q:'What is a build cache?',a:'A build cache stores reusable dependencies or compiled outputs to reduce repeated work. It must be keyed by relevant inputs to avoid stale or incorrect artifacts.',ex:'Maven dependencies are cached by pom and repository checksum.'},
+{q:'How do you improve pipeline speed?',a:'Measure stage duration, cache dependencies, parallelize independent tests, avoid unnecessary Docker context, use incremental builds carefully, and remove duplicated checks.',ex:'Parallel unit, frontend, and static-analysis stages reduce elapsed time.'},
+{q:'How do you make a pipeline reliable?',a:'Use pinned tool versions, repeatable agents, idempotent steps, explicit timeouts, clear failure messages, artifact retention, and monitoring of pipeline health.',ex:'A timeout prevents a stuck external deployment from consuming an agent forever.'},
+{q:'What is an idempotent deployment step?',a:'Running it multiple times produces the same intended state without harmful duplication, which is essential when a network failure leaves the result uncertain.',ex:'Applying the same Kubernetes manifest twice does not create duplicate services.'},
+{q:'Why use timeouts in pipelines?',a:'Timeouts stop hung builds, approvals, tests, or external calls and release resources. The timeout should allow normal completion without masking slow regressions.',ex:'A deployment step times out after 15 minutes and notifies the owner.'},
+{q:'How do you notify a failed pipeline?',a:'Notify the responsible team with the build link, failed stage, revision, environment, and relevant logs. Avoid noisy notifications for every transient retry.',ex:'Slack alert includes service, commit, failed test, and Jenkins URL.'},
+{q:'What is auditability in CI/CD?',a:'Auditability means every release can be traced to source revision, reviewer, pipeline run, artifact, approvals, deployment time, and operator or automation identity.',ex:'Production image digest links back to a signed release build.'},
+{q:'How do you secure Jenkins?',a:'Use SSO or strong authentication, role-based access, least-privilege agents, updated plugins, network controls, encrypted backups, and regular credential rotation.',ex:'Developers can run validation but only release managers can change production jobs.'},
+{q:'Why are Jenkins plugins a risk?',a:'Plugins execute inside a powerful automation system, so outdated or untrusted plugins can introduce vulnerabilities or instability. Minimize, pin, update, and test plugins.',ex:'Review plugin advisories before upgrading the controller.'},
+{q:'What is an ephemeral Jenkins agent?',a:'It is a short-lived agent created for a build and destroyed afterward. It reduces cross-build contamination and provides reproducible tool environments.',ex:'A Kubernetes pod agent disappears after the pipeline finishes.'},
+{q:'How do you manage Docker-in-Docker?',a:'Choose a controlled approach such as a mounted Docker socket, a rootless builder, or a remote build service and understand the security trade-offs of each.',ex:'Use a rootless image builder instead of giving every job host Docker access.'},
+{q:'What is Docker image provenance?',a:'Provenance records how an image was built, from which source revision, with which builder and dependencies. It supports trust and incident investigation.',ex:'Image metadata links digest to commit SHA and Jenkins run.'},
+{q:'What is image signing?',a:'Image signing attaches a verifiable signature to an image digest so deployment systems can allow only trusted artifacts.',ex:'The cluster admission policy rejects unsigned images.'},
+{q:'How do you scan a Dockerfile?',a:'Use linting and security scanners to detect risky base images, root users, secrets, unpinned packages, and excessive privileges before the image is released.',ex:'The pipeline flags COPY .env and an untrusted base image.'},
+{q:'Why avoid running containers as root?',a:'A compromised process has fewer privileges when it runs as a non-root user, reducing the impact of a container escape or application vulnerability.',ex:'USER 10001 runs the Java process.'},
+{q:'What is a deployment manifest?',a:'It is configuration describing how an artifact runs in an environment, including image, replicas, ports, resources, probes, and configuration references.',ex:'A Kubernetes Deployment manifest references an image digest.'},
+{q:'What is GitOps?',a:'GitOps treats a version-controlled repository as the desired state for infrastructure or deployment configuration, with an agent reconciling the environment.',ex:'A merge to the environment repository triggers reconciliation.'},
+{q:'How do you separate build and deploy permissions?',a:'The build can publish an artifact, but only a controlled deployment identity can change an environment. Separate credentials limit the blast radius of a compromised job.',ex:'Pull-request jobs cannot access production deployment tokens.'},
+{q:'What is a release branch?',a:'A release branch stabilizes a candidate version while development continues elsewhere. Only approved fixes should enter it and the final tag should identify the released source.',ex:'release/2.4 receives bug fixes before the production tag.'},
+{q:'What is semantic versioning?',a:'Semantic versioning uses major, minor, and patch numbers to communicate compatibility expectations, although the team must define how API changes map to versions.',ex:'A breaking API change increments the major version.'},
+{q:'How do you manage rollback with database changes?',a:'Prefer backward-compatible migrations and forward fixes. Restoring data or reversing destructive changes requires backups and a tested runbook, not an assumption that rollback is always safe.',ex:'Deploy a compatible schema first, then roll back application code if needed.'},
+{q:'What is disaster recovery for CI/CD?',a:'Back up pipeline configuration, repositories, credentials metadata, artifact locations, and deployment definitions, then test restoration and rebuild capability.',ex:'A new Jenkins controller can recreate jobs from pipeline repositories.'},
+{q:'How do you test a Jenkinsfile?',a:'Use Pipeline syntax validation, shared-library unit tests, linting, and a safe test environment. Critical deployment logic should be tested without touching production.',ex:'A pull request validates the Jenkinsfile before merge.'},
+{q:'What should a good deployment log contain?',a:'It should include service, version, source revision, environment, artifact digest, start and end times, result, and correlation information without exposing secrets.',ex:'Deploy log: orders 1.8.2, commit abc123, staging, digest sha256:...'},
+{q:'How do you handle a partially failed deployment?',a:'Stop further rollout, determine which instances changed, use health and version data to stabilize the environment, then complete or rollback using the release runbook.',ex:'Remove unhealthy canary instances before restoring the previous version.'},
+{q:'How do you deploy multiple microservices safely?',a:'Use independently versioned artifacts, compatibility checks, contract tests, an explicit dependency order where necessary, and gradual rollout rather than rebuilding every service together.',ex:'Deploy a backward-compatible provider before enabling the new consumer field.'},
+{q:'What is a breaking change in CI/CD?',a:'A change that makes existing consumers, deployment configuration, or operational assumptions fail. Pipeline checks and compatibility tests should detect it before release.',ex:'Renaming a required API field breaks an older frontend.'},
+{q:'How do you handle configuration drift?',a:'Keep configuration declarative and versioned, compare actual state with desired state, and avoid manual production edits that are not captured in source control.',ex:'A GitOps diff identifies a replica count changed manually.'},
+{q:'What metrics do you track for CI/CD?',a:'Useful delivery metrics include deployment frequency, lead time, change failure rate, recovery time, build duration, queue time, flaky-test rate, and rollback frequency.',ex:'A dashboard shows median pipeline time and failed deployment percentage.'},
+{q:'What is the difference between build failure and deployment failure?',a:'A build failure means the change was not validated or packaged. A deployment failure means a validated artifact could not be applied or made healthy in its target environment; the responses and diagnostics differ.',ex:'Compilation error stops before an artifact; readiness failure occurs after rollout.'},
+{q:'How do you explain your CI/CD contribution in an interview?',a:'Describe the trigger, pipeline stages, quality checks, artifact strategy, deployment process, security controls, and measurable result. Connect your work to faster feedback, safer releases, or fewer production issues.',ex:'I added image scanning and automated staging deployment, reducing manual release steps.'},
+{q:'Describe a practical Jenkins and Docker pipeline.',a:'Jenkins checks out the commit, runs Maven and Angular tests, performs analysis, builds a Docker image, scans it, pushes the immutable digest, deploys to staging, runs smoke tests, and waits for approval before production.',ex:'Git -> Jenkins -> tests -> scan -> registry -> staging -> approval -> production.'}
+];
+renderQuestions(cicdQuestions, 'questionContainer', 'qcount');
+</script>
+</body>
+</html>

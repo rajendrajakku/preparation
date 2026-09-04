@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Interview Questions | Interview Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="brand">Interview<span>Prep</span><span> by Rajendra Jakku</span></a>
+    <div class="navlinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="cv.html">My CV</a>
+      <a href="java.html">Java</a>
+      <a href="springboot.html">Spring Boot</a>
+      <a href="microservices.html">Microservices</a>
+      <a href="database.html">Database</a>
+      <a href="angular.html">Angular</a>
+      <a href="projects.html">Project Questions</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="aws.html">AWS</a>
+      <a href="coding.html">Coding Practice</a>
+      <a href="kafka.html">Kafka</a>
+    </div>
+  </div>
+</nav>
+<div class="pagehead">
+  <p class="eyebrow">AMAZON WEB SERVICES</p>
+  <h1>AWS Interview Questions</h1>
+  <p>Cloud fundamentals, IAM, networking, compute, containers, storage, databases, serverless services, observability, security, and cost optimization.</p>
+  <span class="count" id="qcount">100 questions</span>
+</div>
+<div class="controls"><div class="search-wrap"><input type="text" id="searchInput" placeholder="Search questions, answers, or code..."></div><button class="btn" id="expandAll">Expand all</button><button class="btn" id="collapseAll">Collapse all</button></div>
+<div class="qlist"><div id="questionContainer"></div></div>
+<footer>Part of the Full Stack Java Developer interview prep reference. <a href="index.html">Back to all topics</a></footer>
+<script src="app.js"></script>
+<script>
+const awsQuestions = [
+{q:'What is AWS?',a:'AWS is a cloud platform that provides on-demand compute, storage, networking, database, security, monitoring, and application services with usage-based pricing.',ex:'A Spring Boot service runs on containers while S3 stores documents.'},
+{q:'What is an AWS Region?',a:'A Region is a separate geographic area containing multiple isolated Availability Zones. Choosing a Region affects latency, compliance, service availability, and cost.',ex:'Deploy in a region close to users and required government data residency.'},
+{q:'What is an Availability Zone?',a:'An Availability Zone is an isolated data-center location within a Region. Deploying across multiple zones improves resilience against a zone failure.',ex:'Run service instances in two AZs behind a load balancer.'},
+{q:'What is the AWS shared responsibility model?',a:'AWS secures the underlying cloud infrastructure. The customer secures configuration, identity, data, operating systems, applications, and network rules according to the service used.',ex:'AWS protects the physical host; you patch an EC2 operating system.'},
+{q:'What is an AWS account?',a:'An AWS account is an isolated environment for resources, billing, limits, and security boundaries. Organizations often separate production, non-production, and security accounts.',ex:'A production account has different credentials and guardrails from development.'},
+{q:'What is an AWS Organization?',a:'AWS Organizations centrally manages multiple accounts, consolidated billing, organizational units, policies, and account governance.',ex:'A security policy denies public S3 buckets in all production accounts.'},
+{q:'What is IAM?',a:'Identity and Access Management controls authentication and authorization for AWS resources using users, groups, roles, and policies.',ex:'A deployment role can push an image but cannot read unrelated customer data.'},
+{q:'IAM user versus IAM role?',a:'A user represents a long-term identity, while a role is assumed temporarily by users, services, or external identities. Roles are preferred for workloads because they avoid embedded long-term keys.',ex:'An EC2 instance assumes a role to read from S3.'},
+{q:'What is an IAM policy?',a:'A policy is a JSON document that allows or denies actions on resources under conditions. Explicit deny overrides an allow.',ex:'Allow s3:GetObject only for arn:aws:s3:::app-documents/verified/*.'},
+{q:'What is least privilege?',a:'Least privilege grants only the actions, resources, and conditions required for a task. It limits damage if credentials or a service are compromised.',ex:'A notification service can publish to one SNS topic, not all topics.'},
+{q:'What is an IAM group?',a:'A group collects IAM users with similar permissions, making administration easier. Applications should generally use roles rather than shared user credentials.',ex:'Read-only analysts belong to a reporting group.'},
+{q:'What is MFA?',a:'Multi-factor authentication requires an additional factor beyond a password or key. It is especially important for privileged human access.',ex:'The root account requires hardware or virtual MFA.'},
+{q:'How should the root account be used?',a:'Use the root account only for tasks that require it, enable MFA, avoid access keys, and do not use it for daily administration.',ex:'Create an administrative role for normal operations.'},
+{q:'What is STS?',a:'AWS Security Token Service issues temporary credentials for assumed roles and federated access. Temporary credentials reduce the exposure of long-lived keys.',ex:'Jenkins assumes a deployment role for one pipeline run.'},
+{q:'How do you secure AWS access keys?',a:'Avoid keys in source code, rotate unavoidable keys, use roles and federation, restrict permissions, monitor usage, and revoke exposed keys immediately.',ex:'An EC2 instance profile replaces a key stored in application properties.'},
+{q:'What is a VPC?',a:'A Virtual Private Cloud is an isolated logical network where you define IP ranges, subnets, routing, and network security for AWS resources.',ex:'Microservices run in private subnets inside a project VPC.'},
+{q:'What is a subnet?',a:'A subnet is a range of IP addresses within a VPC and is associated with one Availability Zone. It can be public or private based on routing.',ex:'Load balancers use public subnets; databases use private subnets.'},
+{q:'Public versus private subnet?',a:'A public subnet has a route to an Internet Gateway. A private subnet has no direct inbound internet route and may use NAT for outbound access.',ex:'An EC2 application server in a private subnet downloads patches through NAT.'},
+{q:'What is an Internet Gateway?',a:'An Internet Gateway attaches to a VPC and provides internet connectivity for resources whose subnet route table and security rules allow it.',ex:'A public load balancer uses a route to the Internet Gateway.'},
+{q:'What is a NAT Gateway?',a:'A NAT Gateway allows resources in private subnets to initiate outbound internet connections without accepting unsolicited inbound connections.',ex:'A private service calls an external government API through NAT.'},
+{q:'What is a route table?',a:'A route table controls where subnet traffic is sent based on destination CIDR ranges or prefixes.',ex:'0.0.0.0/0 routes public traffic to an Internet Gateway.'},
+{q:'What is a security group?',a:'A security group is a stateful virtual firewall attached to resources such as EC2 instances. It controls allowed inbound and outbound traffic.',ex:'Allow port 8080 from the internal load balancer security group only.'},
+{q:'What is a network ACL?',a:'A network ACL is a stateless subnet-level firewall with ordered allow and deny rules. Security groups are usually the primary workload control.',ex:'A subnet ACL denies a known unwanted CIDR range.'},
+{q:'Security group versus network ACL?',a:'Security groups are stateful and attached to resources; network ACLs are stateless and attached to subnets. Both should be designed deliberately and monitored.',ex:'A return response is allowed by a stateful security group automatically.'},
+{q:'What is VPC peering?',a:'VPC peering privately connects two VPCs using their private IP ranges. It is non-transitive, so every required connection needs its own route.',ex:'A shared services VPC peers with an application VPC.'},
+{q:'What is Transit Gateway?',a:'Transit Gateway is a central hub for connecting many VPCs and on-premises networks, simplifying routing compared with many individual peerings.',ex:'Development, production, and security VPCs connect through one hub.'},
+{q:'What is a VPC endpoint?',a:'A VPC endpoint lets private resources access supported AWS services without traversing the public internet. Gateway endpoints support services such as S3.',ex:'Private EC2 instances access S3 through an S3 endpoint.'},
+{q:'What is DNS in AWS?',a:'Amazon Route 53 provides domain registration, DNS resolution, health checks, and routing policies for AWS and external endpoints.',ex:'api.example.com resolves to an application load balancer.'},
+{q:'What is a Route 53 health check?',a:'A health check monitors an endpoint or other health signal and can influence DNS routing away from an unhealthy target.',ex:'Failover DNS sends traffic to a secondary region when the primary is unhealthy.'},
+{q:'What is an EC2 instance?',a:'EC2 provides virtual servers with selectable compute, memory, storage, networking, and operating-system options.',ex:'Run a Spring Boot service on a Linux EC2 instance.'},
+{q:'What is an AMI?',a:'An Amazon Machine Image is a template containing the operating system, software, and configuration used to launch EC2 instances.',ex:'A hardened Java AMI is used by an Auto Scaling Group.'},
+{q:'What is an instance type?',a:'An instance type defines a combination of CPU, memory, network, and sometimes accelerator capacity. Select it based on measured workload needs.',ex:'A memory-optimized type suits a service with a large JVM heap.'},
+{q:'What is an Auto Scaling Group?',a:'An Auto Scaling Group maintains a desired number of instances, replaces unhealthy instances, and can scale capacity based on policies or schedules.',ex:'Add instances when average CPU or request count crosses a threshold.'},
+{q:'What is an Elastic Load Balancer?',a:'Elastic Load Balancing distributes traffic across healthy targets and provides a stable endpoint, health checks, and integration with scaling.',ex:'An ALB routes HTTPS traffic to private Spring Boot targets.'},
+{q:'ALB versus NLB?',a:'An Application Load Balancer works at HTTP level with paths, hosts, and headers. A Network Load Balancer handles high-performance TCP or TLS traffic at a lower level.',ex:'ALB routes /farmer and /procurement to different target groups.'},
+{q:'What is an ALB target group?',a:'A target group contains destinations such as instances, containers, or IPs and defines health checks and routing behavior for a load balancer listener.',ex:'The target group checks /actuator/health/readiness.'},
+{q:'What is an EC2 user data script?',a:'User data runs during initial instance launch and can install packages, configure agents, or register the instance. Complex setup is usually better baked into an AMI.',ex:'User data installs a monitoring agent on first boot.'},
+{q:'What is an EBS volume?',a:'Elastic Block Store provides persistent block storage for EC2. Volumes have performance, encryption, backup, and availability characteristics to plan.',ex:'An encrypted EBS volume stores application logs temporarily.'},
+{q:'What is an EBS snapshot?',a:'An EBS snapshot is a point-in-time backup stored in AWS. Snapshots can create new volumes and support recovery or migration.',ex:'A scheduled snapshot protects a database volume.'},
+{q:'What is ECS?',a:'Elastic Container Service runs and manages Docker containers using AWS-managed control planes and launch options such as EC2 or Fargate.',ex:'The procurement service runs as an ECS task.'},
+{q:'What is Fargate?',a:'Fargate is a serverless compute engine for containers. AWS manages the underlying servers while you define task resources and networking.',ex:'Run a Spring Boot image on Fargate without managing EC2 nodes.'},
+{q:'What is an ECS task definition?',a:'A task definition describes containers, images, ports, CPU, memory, environment, secrets, logging, and IAM roles for an ECS task.',ex:'The task definition references an ECR image digest and a Secrets Manager ARN.'},
+{q:'What is an ECS service?',a:'An ECS service maintains a desired number of task instances, integrates with load balancers, and performs rolling deployments or replacements.',ex:'The service keeps three healthy notification tasks running.'},
+{q:'What is ECR?',a:'Elastic Container Registry is a private registry for Docker and OCI images with IAM integration, scanning, lifecycle policies, and regional repositories.',ex:'Jenkins pushes the notification image to ECR.'},
+{q:'ECS versus EKS?',a:'ECS is AWS-native container orchestration with simpler operational overhead. EKS provides managed Kubernetes control planes and Kubernetes portability, but requires more platform expertise.',ex:'Choose ECS for a straightforward AWS container platform; EKS for an established Kubernetes ecosystem.'},
+{q:'What is S3?',a:'Simple Storage Service is highly durable object storage for files, backups, exports, logs, and static assets. Objects are stored in buckets with keys and metadata.',ex:'Farmer documents are stored under a farmer-specific S3 prefix.'},
+{q:'What is an S3 bucket?',a:'A bucket is a globally unique storage container with policies, encryption, lifecycle, versioning, and access settings.',ex:'prod-project-documents stores production uploads.'},
+{q:'What is an S3 object key?',a:'An object key is the full identifier of an object inside a bucket. Prefixes make keys appear organized even though S3 is object storage.',ex:'farmers/2026/12345/aadhaar-proof.pdf'},
+{q:'What is S3 versioning?',a:'Versioning preserves prior object versions so accidental overwrites or deletes can be recovered. It should be combined with lifecycle and retention policies.',ex:'Restore the previous document after an accidental replacement.'},
+{q:'What is an S3 lifecycle policy?',a:'A lifecycle policy transitions objects to lower-cost storage or expires them after a defined period based on prefixes, tags, or age.',ex:'Move old reports to Glacier after 90 days.'},
+{q:'What is S3 storage class?',a:'Storage classes optimize cost and access patterns, from frequently accessed Standard to infrequent or archival classes with different retrieval behavior.',ex:'Frequently downloaded reports use Standard; old audit files use Glacier.'},
+{q:'How do you secure an S3 bucket?',a:'Block public access, use least-privilege bucket and identity policies, enable encryption, log access where required, and apply organization controls.',ex:'Only the document service role can read the private bucket prefix.'},
+{q:'What is S3 presigned URL?',a:'A presigned URL grants time-limited access to a specific object without making the bucket public. It is useful for direct browser upload or download.',ex:'The API returns a five-minute upload URL for a farmer document.'},
+{q:'What is RDS?',a:'Relational Database Service manages relational engines such as PostgreSQL and MySQL, including provisioning, backups, patching, monitoring, and high availability options.',ex:'A Spring Boot service connects to an RDS PostgreSQL database in private subnets.'},
+{q:'What is an RDS Multi-AZ deployment?',a:'Multi-AZ maintains a synchronously replicated standby in another Availability Zone for failover. It improves availability rather than read scaling.',ex:'RDS automatically fails over to the standby after a primary problem.'},
+{q:'Read replica versus Multi-AZ?',a:'A read replica handles read scaling and may support reporting. Multi-AZ provides high availability with a standby that is not normally used for reads.',ex:'Use a read replica for search reports and Multi-AZ for database resilience.'},
+{q:'What is an RDS parameter group?',a:'A parameter group controls database engine settings. Changes may apply immediately or after a restart depending on the parameter.',ex:'Tune connection limits after checking application pool size.'},
+{q:'What are RDS backups?',a:'Automated backups support point-in-time recovery within the retention period, while manual snapshots can be retained longer for release or migration needs.',ex:'Restore the database to a timestamp before a bad data change.'},
+{q:'How should a Spring Boot app connect to RDS?',a:'Use private networking, a secret manager for credentials, TLS where supported, a bounded connection pool, migrations, and monitoring for connection and query health.',ex:'The application receives the database URL from external configuration.'},
+{q:'What is ElastiCache?',a:'ElastiCache provides managed in-memory engines such as Redis or Memcached for caching, sessions, counters, and short-lived data.',ex:'Cache stable dropdown data and frequently read master values in Redis.'},
+{q:'What is cache invalidation?',a:'Cache invalidation removes or updates stale values when source data changes. A suitable TTL and explicit invalidation policy are both important.',ex:'Clear the crop master cache after an administrator publishes a new crop.'},
+{q:'What is DynamoDB?',a:'DynamoDB is a managed NoSQL key-value and document database designed for predictable low-latency access at scale.',ex:'Store idempotency records keyed by request ID.'},
+{q:'What is a DynamoDB partition key?',a:'The partition key determines item distribution and is used to locate data. It should have enough cardinality to avoid hot partitions.',ex:'tenantId#farmerId distributes farmer records.'},
+{q:'What is Lambda?',a:'Lambda runs code in response to events without managing servers. You pay for execution and must design around duration, concurrency, startup, and statelessness.',ex:'A Lambda processes an S3 upload event to create a thumbnail.'},
+{q:'What is a Lambda cold start?',a:'A cold start is initialization latency when a new execution environment is created. Runtime, package size, memory, and initialization work affect it.',ex:'Keep a Java Lambda package small and initialize only required clients.'},
+{q:'What triggers Lambda?',a:'Lambda can be invoked synchronously through API Gateway, asynchronously by services, or from event sources such as S3, SQS, and EventBridge.',ex:'SQS invokes a Lambda to process notification jobs.'},
+{q:'What is API Gateway?',a:'API Gateway exposes and manages APIs with routing, authentication integration, throttling, validation, stages, and monitoring.',ex:'API Gateway routes a public request to Lambda or a private load balancer.'},
+{q:'What is SQS?',a:'Simple Queue Service is a managed queue that decouples producers and consumers. It supports visibility timeouts, retries, and dead-letter queues.',ex:'Payment events wait in SQS while a worker processes them reliably.'},
+{q:'What is SNS?',a:'Simple Notification Service is a publish-subscribe service that fans out messages to subscribers such as SQS, Lambda, email, or HTTP endpoints.',ex:'A payment-approved topic publishes to notification and audit queues.'},
+{q:'SQS versus SNS?',a:'SQS stores messages for one consumer group to process reliably. SNS distributes a message to multiple subscribers and does not act as the durable worker queue by itself.',ex:'SNS fans out; separate SQS queues buffer each consumer.'},
+{q:'What is a dead-letter queue?',a:'A dead-letter queue stores messages that exceed retry limits so they can be inspected and replayed after the underlying issue is fixed.',ex:'An invalid notification payload is moved to the DLQ after five attempts.'},
+{q:'What is EventBridge?',a:'EventBridge routes events between AWS services, applications, and SaaS sources using event patterns and targets.',ex:'An OrderCreated event routes to notification and reporting targets.'},
+{q:'What is CloudWatch?',a:'CloudWatch collects metrics, logs, traces, alarms, dashboards, and events for AWS resources and applications.',ex:'Alarm when API 5xx rate or ECS CPU exceeds a threshold.'},
+{q:'What is a CloudWatch metric?',a:'A metric is a time-series measurement such as CPU, latency, error count, or queue depth, usually identified by a namespace and dimensions.',ex:'Api5xxCount grouped by service and environment.'},
+{q:'What is a CloudWatch alarm?',a:'An alarm evaluates a metric against a threshold or anomaly and can notify or trigger an action.',ex:'Notify the operations team when queue age exceeds five minutes.'},
+{q:'What is centralized logging?',a:'Centralized logging collects application and infrastructure logs in one searchable system with structured fields, retention, access control, and correlation IDs.',ex:'Search all services by traceId for one farmer registration request.'},
+{q:'What is AWS X-Ray?',a:'X-Ray traces requests across supported AWS services and applications, helping identify latency and errors across distributed components.',ex:'A trace shows the gateway waiting on a slow external integration.'},
+{q:'What is observability?',a:'Observability combines logs, metrics, and traces to explain system behavior. Good signals include request rate, errors, latency, saturation, and business outcomes.',ex:'Track payment success rate alongside API latency.'},
+{q:'What is CloudTrail?',a:'CloudTrail records AWS API activity for governance, security investigation, and auditing, including who performed an action and from where.',ex:'Find which role changed an S3 bucket policy.'},
+{q:'What is AWS Config?',a:'AWS Config records resource configuration and evaluates it against compliance rules over time.',ex:'Detect security groups that expose SSH to the internet.'},
+{q:'What is KMS?',a:'Key Management Service creates and controls encryption keys used by AWS services and applications, with permissions and audit events.',ex:'Encrypt an S3 bucket and RDS storage with a customer-managed KMS key.'},
+{q:'What is Secrets Manager?',a:'Secrets Manager stores, retrieves, encrypts, and can rotate sensitive values such as database passwords and API credentials.',ex:'The ECS task retrieves an external API token at startup.'},
+{q:'Parameter Store versus Secrets Manager?',a:'Parameter Store handles configuration and can store encrypted values. Secrets Manager focuses on secret lifecycle, retrieval, and rotation features.',ex:'Use Parameter Store for a feature flag and Secrets Manager for a database password.'},
+{q:'What is AWS WAF?',a:'Web Application Firewall filters HTTP requests using managed or custom rules for patterns such as SQL injection, cross-site scripting, and abusive traffic.',ex:'WAF blocks suspicious requests before they reach the load balancer.'},
+{q:'What is Shield?',a:'AWS Shield provides managed DDoS protection. Standard protection is broadly available, while Advanced provides additional protections and response features.',ex:'Public API endpoints receive baseline DDoS protection.'},
+{q:'What is a private subnet best practice?',a:'Place databases and internal services in private subnets, allow only required security-group paths, and use controlled egress through NAT or endpoints.',ex:'RDS accepts traffic only from the application security group.'},
+{q:'What is a bastion host?',a:'A bastion host is a controlled administrative entry point into private networks. Modern designs often prefer Systems Manager Session Manager to avoid inbound SSH.',ex:'Operations connects through SSM instead of opening port 22 publicly.'},
+{q:'What is Systems Manager?',a:'Systems Manager provides operational tools such as secure sessions, patching, parameters, automation, and run commands for managed instances.',ex:'Run a patch command on tagged instances without SSH.'},
+{q:'What is AWS CodeDeploy?',a:'CodeDeploy automates application deployment to EC2, on-premises servers, Lambda, or ECS with lifecycle hooks and rollout strategies.',ex:'A deployment hook runs smoke tests before traffic is shifted.'},
+{q:'What is CodePipeline?',a:'CodePipeline models source, build, test, approval, and deployment stages across AWS and integrated tools.',ex:'Git source -> CodeBuild -> approval -> ECS deployment.'},
+{q:'What is CodeBuild?',a:'CodeBuild is a managed build service that compiles code, runs tests, builds images, and publishes artifacts based on a build specification.',ex:'CodeBuild runs Maven tests and pushes an image to ECR.'},
+{q:'Jenkins versus AWS CodePipeline?',a:'Jenkins offers broad plugin flexibility and can integrate existing enterprise workflows. CodePipeline is managed and integrates naturally with AWS services; the choice depends on team standards and operational needs.',ex:'Use Jenkins for existing shared pipelines and CodePipeline for a managed AWS-native flow.'},
+{q:'How do you deploy a Dockerized Spring Boot service on AWS?',a:'Build and scan the image, push it to ECR, run it on ECS or EKS in private subnets, expose it through a load balancer, inject secrets, and monitor health and logs.',ex:'Jenkins -> ECR -> ECS service -> ALB -> CloudWatch.'},
+{q:'How do you make an AWS service highly available?',a:'Use multiple Availability Zones, health checks, automated replacement, managed services, backups, tested failover, and no single-instance dependency.',ex:'ALB across AZs with an Auto Scaling Group and Multi-AZ RDS.'},
+{q:'How do you design disaster recovery on AWS?',a:'Define recovery point and time objectives, back up data, document dependencies, choose a recovery strategy, and regularly test restoration rather than assuming backups work.',ex:'Restore RDS and redeploy the image in a secondary region during a drill.'},
+{q:'What is RTO?',a:'Recovery Time Objective is the maximum acceptable time to restore service after a disruption.',ex:'A critical payment API has an RTO of one hour.'},
+{q:'What is RPO?',a:'Recovery Point Objective is the maximum acceptable amount of data loss measured in time.',ex:'An RPO of five minutes requires frequent replication or backups.'},
+{q:'What is AWS Well-Architected Framework?',a:'It reviews workloads across operational excellence, security, reliability, performance efficiency, cost optimization, and sustainability.',ex:'Review the procurement platform before a production launch.'},
+{q:'What is AWS autoscaling based on?',a:'Autoscaling can use CPU, memory, request count, queue depth, schedules, or custom metrics. Choose a signal that reflects user demand and service capacity.',ex:'Scale notification workers from SQS queue depth.'},
+{q:'How do you optimize AWS cost?',a:'Right-size resources, shut down unused environments, use autoscaling, select suitable storage classes, purchase commitments for stable workloads, and monitor budgets.',ex:'Move old reports to archival storage and stop non-production instances overnight.'},
+{q:'What are Reserved Instances and Savings Plans?',a:'They reduce cost in exchange for a usage commitment. Savings Plans are generally more flexible across compute usage than traditional instance reservations.',ex:'Use a commitment for a stable production baseline and on-demand capacity for peaks.'},
+{q:'What are AWS budgets?',a:'Budgets track actual or forecasted spend and notify when thresholds are reached. They provide control but do not automatically prevent every charge.',ex:'Alert when the development account exceeds its monthly estimate.'},
+{q:'What is tagging?',a:'Tags are key-value metadata used for ownership, environment, cost allocation, automation, and compliance.',ex:'Tags include Project=PM-AASHA, Environment=Prod, Owner=Platform.'},
+{q:'How do you protect data in transit?',a:'Use TLS for external and internal traffic where appropriate, validate certificates, restrict protocols, and avoid sending sensitive data in URLs or logs.',ex:'HTTPS terminates at the ALB and service traffic remains encrypted where required.'},
+{q:'How do you protect data at rest?',a:'Enable service encryption using AWS-managed or customer-managed KMS keys, control key access, and verify backup encryption and retention.',ex:'RDS, EBS, S3, and backups use encryption with audited key permissions.'},
+{q:'How do you handle a public S3 bucket incident?',a:'Block public access, identify affected objects and access history, rotate exposed credentials if necessary, preserve evidence, notify stakeholders, and add preventive policy controls.',ex:'CloudTrail and S3 access logs support the incident timeline.'},
+{q:'How do you troubleshoot an unreachable EC2 service?',a:'Check instance health, application status, listener and target health, security groups, network ACLs, route tables, DNS, logs, and resource pressure in that order.',ex:'A healthy instance still fails because the security group lacks the ALB source rule.'},
+{q:'How do you troubleshoot a slow API on AWS?',a:'Use traces and metrics to separate load balancer, application, database, network, and external dependency latency. Then check saturation, query timings, connection pools, and recent deployments.',ex:'X-Ray identifies a slow RDS query while CloudWatch shows normal CPU.'},
+{q:'How do you manage multiple environments in AWS?',a:'Separate accounts or strongly isolated environments, use infrastructure as code, environment-specific configuration, controlled promotion, and least-privilege deployment roles.',ex:'Development and production have different accounts and deployment credentials.'},
+{q:'What is infrastructure as code?',a:'Infrastructure as code defines cloud resources in version-controlled templates so environments are repeatable, reviewable, and less dependent on manual console work.',ex:'Terraform or CloudFormation defines the VPC, ECS service, and RDS instance.'},
+{q:'Terraform versus CloudFormation?',a:'Terraform is multi-cloud and uses its own state and provider model. CloudFormation is AWS-native and integrates directly with AWS resource lifecycle and drift tooling.',ex:'Use the tool that matches team skills, governance, and provider scope.'},
+{q:'What is infrastructure drift?',a:'Drift occurs when actual resources differ from their declared configuration, often because of manual changes. Detect and reconcile it before it causes deployment surprises.',ex:'A console-edited security rule is identified by a plan or drift check.'},
+{q:'How do you use AWS in a microservices project?',a:'I map each service to an independently deployable container or compute unit, use an ALB or API Gateway for entry, private networking, IAM roles, managed databases, S3 for objects, queues for asynchronous work, and CloudWatch for operations.',ex:'Gateway -> ALB -> ECS services -> RDS/S3/SQS, with IAM and CloudWatch around them.'},
+{q:'How would you explain your AWS project experience in an interview?',a:'Explain the workload, network layout, compute choice, deployment path, data services, security controls, monitoring, failure handling, and measurable result. Tie every AWS service to a business or operational reason.',ex:'I used private ECS services and RDS Multi-AZ to improve isolation and availability.'},
+{q:'What is a good AWS deployment flow for your project?',a:'A source change triggers Jenkins, which tests and scans the code, builds a Docker image, pushes it to ECR, deploys the immutable image to ECS, waits for health checks, runs smoke tests, and supports approval or rollback.',ex:'Git -> Jenkins -> tests -> ECR -> ECS -> ALB -> CloudWatch.'}
+];
+renderQuestions(awsQuestions, 'questionContainer', 'qcount');
+</script>
+</body>
+</html>

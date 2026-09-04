@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project-Based Interview Questions | Interview Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="brand">Interview<span>Prep</span><span> by Rajendra Jakku</span></a>
+    <div class="navlinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="cv.html">My CV</a>
+      <a href="java.html">Java</a>
+      <a href="springboot.html">Spring Boot</a>
+      <a href="microservices.html">Microservices</a>
+      <a href="database.html">Database</a>
+      <a href="angular.html">Angular</a>
+      <a href="projects.html">Project Questions</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="aws.html">AWS</a>
+      <a href="coding.html">Coding Practice</a>
+      <a href="kafka.html">Kafka</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pagehead">
+  <p class="eyebrow">PROJECT-BASED QUESTIONS</p>
+  <h1>Explain the project, architecture, and impact</h1>
+  <p>Practical answers for discussing the NAFED, NCCF, and PM-AASHA portals, their microservices architecture, external integrations, API design, and production improvements.</p>
+  <span class="count" id="qcount">34 questions</span>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search questions, answers, or code...">
+  </div>
+  <button class="btn" id="expandAll">Expand all</button>
+  <button class="btn" id="collapseAll">Collapse all</button>
+</div>
+
+<div class="qlist">
+  <div id="questionContainer"></div>
+</div>
+
+<footer>
+  Part of the Full Stack Java Developer interview prep reference. <a href="index.html">Back to all topics</a>
+</footer>
+
+<script src="app.js"></script>
+<script>
+  const projectQuestions = [
+    {
+      q: 'Can you describe your current project and your responsibilities?',
+      a: 'I work on a full stack business application built with Angular on the frontend and Java, Spring Boot, and Spring Data JPA on the backend. The backend is split into independently deployable microservices. My responsibilities include designing REST APIs, implementing business workflows, integrating services, securing endpoints with JWT, improving database queries, supporting the Angular screens, and monitoring production issues from development through release.',
+      ex: 'Angular UI -> API Gateway -> Order Service -> Customer Service -> PostgreSQL',
+      code: false
+    },
+    {
+      q: 'Why did your team choose a microservices architecture?',
+      a: 'We chose microservices because the application had separate business capabilities with different release and scaling needs. Splitting those capabilities allowed teams to deploy changes independently, isolate failures, and scale high-traffic services without scaling the entire application. We use the approach selectively because it also introduces network calls, distributed tracing, data consistency, and deployment complexity.',
+      ex: 'Use microservices where independent ownership, deployment, or scaling provides a real benefit.',
+      code: false
+    },
+    {
+      q: 'How is microservices architecture currently used in your project?',
+      a: 'The system has services organized around business capabilities, such as authentication, customer, order, and notification workflows. Requests enter through an API Gateway, which handles routing and common cross-cutting concerns. Each service owns its business logic and data access, communicates with other services through documented REST APIs or asynchronous events, and is deployed independently. Centralized logging, metrics, and distributed tracing help us follow a request across service boundaries.',
+      ex: 'Client -> API Gateway -> Order Service -> event broker -> Notification Service',
+      code: false
+    },
+    {
+      q: 'How do you decide the boundary of a microservice?',
+      a: 'I start with business capabilities and ownership rather than database tables or technical layers. A service should have a clear responsibility, a small and stable contract, and data that it can own. I also check transaction boundaries, change frequency, team ownership, and expected scaling patterns. If two areas always change and deploy together, splitting them may create unnecessary distributed complexity.',
+      ex: 'Customer profile and order processing can be separate when their business rules and ownership are independent.',
+      code: false
+    },
+    {
+      q: 'How do services communicate in your application?',
+      a: 'We use synchronous REST calls when the caller needs an immediate result, such as validating customer information. We use asynchronous events for work that does not need to block the user response, such as sending notifications or updating reporting data. Every integration has a versioned contract, timeouts, retry rules, and an approach for handling duplicate messages or partial failure.',
+      ex: 'POST /orders returns the order quickly; OrderCreated is consumed later by notification and reporting services.',
+      code: false
+    },
+    {
+      q: 'How do you handle failure between microservices?',
+      a: 'I protect synchronous calls with connection and response timeouts, limited retries with backoff, and a circuit breaker. Retries are used only for transient failures and safe operations, because retrying a non-idempotent request can create duplicates. When a dependency remains unavailable, the service returns a controlled fallback or an actionable error and records correlation data for investigation.',
+      ex: 'Timeout -> limited backoff retry -> circuit open -> fallback or clear 503 response',
+      code: false
+    },
+    {
+      q: 'How do you improve an API response?',
+      a: 'I first measure the response using logs, traces, database timings, and real request payloads. Then I reduce unnecessary fields with response DTOs, fetch only the required columns, add or correct indexes, remove N+1 queries, paginate large collections, and cache stable reference data. I also move slow non-critical work to asynchronous processing. The goal is a smaller payload and less server work without hiding errors or changing the API contract unexpectedly.',
+      ex: 'Before: full entity graph and 2.4 seconds. After: DTO projection, pagination, and an index reduced the response to 280 milliseconds.',
+      code: false
+    },
+    {
+      q: 'How do you design a consistent API response?',
+      a: 'I use response DTOs instead of exposing persistence entities. Successful responses contain the requested data and useful metadata, while failures follow one documented error shape with a timestamp, status, stable error code, message, path, and correlation ID. This lets Angular display predictable messages and lets support teams trace a failure without exposing internal stack traces.',
+      ex: '{ "data": { "id": 42, "status": "CONFIRMED" }, "traceId": "a81f..." }',
+      code: true
+    },
+    {
+      q: 'How do you make APIs faster without sacrificing correctness?',
+      a: 'I separate performance work from correctness guarantees. I keep validation and authorization synchronous, optimize database access with proper indexes and bounded queries, and use caching only for data with an acceptable freshness policy. For writes, I use idempotency keys where clients may retry and return an operation status when processing is asynchronous. I verify improvements with latency percentiles and error-rate metrics, not only a local stopwatch.',
+      ex: 'For a retried payment request, the idempotency key ensures the same request does not create two payments.',
+      code: false
+    },
+    {
+      q: 'How do you secure communication and APIs?',
+      a: 'The gateway authenticates the request using JWT, and services enforce authorization based on roles or permissions instead of trusting only the URL. Secrets are stored outside source control, traffic is protected with TLS, and sensitive values are excluded from logs. I also validate input, apply suitable rate limits, and keep service-to-service credentials scoped to the required permissions.',
+      ex: 'Authentication proves who the caller is; authorization decides whether that caller may perform the operation.',
+      code: false
+    },
+    {
+      q: 'How do you maintain data consistency across services?',
+      a: 'Each service owns its data and local transaction. For a workflow spanning services, I prefer events and a process that can be retried safely instead of a distributed database transaction. The outbox pattern can store the business change and its event in the same local transaction, while consumers remain idempotent. Failures are visible through retry queues and dead-letter handling.',
+      ex: 'Order saved + OrderCreated outbox record committed together; a publisher delivers the event afterward.',
+      code: false
+    },
+    {
+      q: 'How do you monitor and troubleshoot a production API issue?',
+      a: 'I begin with the correlation or trace ID, then follow the request through the gateway, service logs, database timings, and downstream calls. Dashboards show request rate, error rate, latency percentiles, resource usage, and circuit-breaker state. After identifying the bottleneck, I reproduce it with a representative request, make the smallest fix, verify it with tests and metrics, and document the root cause and prevention step.',
+      ex: 'Trace ID -> gateway log -> service span -> slow SQL query -> query plan and index review',
+      code: false
+    },
+    {
+      q: 'What are the three projects or portals you work on?',
+      a: 'I work on three related government agriculture portals: NAFED, NCCF, and PM-AASHA. PM-AASHA handles common farmer registration, crop registration, and other shared farmer-related capabilities. NAFED and NCCF support procurement workflows, including lot collection, dispatch, and payment processing. Each portal has around five to six business-focused microservices, while PM-AASHA also provides common capabilities used by the other portals.',
+      ex: 'PM-AASHA: farmer and crop registration | NAFED/NCCF: lot collection -> dispatch -> payment',
+      code: false
+    },
+    {
+      q: 'How are NAFED and NCCF different from PM-AASHA?',
+      a: 'PM-AASHA is the common farmer and crop foundation portal. It manages basic farmer registration, crop registration, and reusable master or dropdown data. NAFED and NCCF are procurement-focused portals where the business flow includes collecting lots, dispatching procured material, and processing payments. Keeping these responsibilities separate makes the domain boundaries clearer and allows procurement changes without duplicating common farmer functionality.',
+      ex: 'A farmer is registered once in PM-AASHA; the eligible farmer and crop information can then support a NAFED or NCCF procurement workflow.',
+      code: false
+    },
+    {
+      q: 'How many microservices are used for each portal?',
+      a: 'Each portal uses approximately five to six business microservices, depending on the portal requirements. The exact service grouping can evolve, but the design keeps business capabilities separate and independently deployable. Common platform services such as the API Gateway, Eureka, authorization, master, dropdown, and notification services support the overall ecosystem.',
+      ex: 'NAFED: procurement, lot, dispatch, payment, notification, and integration capabilities can be deployed separately.',
+      code: false
+    },
+    {
+      q: 'Does PM-AASHA use a shared database?',
+      a: 'Yes. PM-AASHA uses a common database for its shared farmer, crop, and registration information. The services are still separated at the application level, with each service owning its tables or schema responsibilities and accessing data through its own service APIs. We avoid allowing other portals to directly modify the PM-AASHA database; NAFED and NCCF consume the required data through secured APIs so ownership and validation remain in PM-AASHA.',
+      ex: 'Farmer Registration Service owns farmer data; a procurement service requests verified farmer details through an API instead of updating the common database directly.',
+      code: false
+    },
+    {
+      q: 'How are the microservices connected independently?',
+      a: 'Each service runs as an independent Spring Boot application with its own configuration, deployment lifecycle, health endpoint, and API contract. Services discover one another through Eureka, and requests normally enter through the API Gateway rather than exposing every service publicly. The authorization service validates access, while downstream services communicate using service-to-service REST calls or events with timeouts, error handling, and correlation IDs.',
+      ex: 'Angular -> API Gateway -> Farmer Registration Service -> external Aadhaar Integration Service',
+      code: false
+    },
+    {
+      q: 'What is the role of the API Gateway in your architecture?',
+      a: 'The API Gateway is the single entry point for the Angular portals. It routes requests to the correct service, applies common authentication or authorization filters, supports cross-origin policies, and can provide rate limiting, request tracing, and consistent error handling. It prevents clients from needing to know internal service URLs and reduces the number of public endpoints that must be secured.',
+      ex: 'GET /api/farmers/{id} -> gateway -> farmer-registration-service; POST /api/lots -> gateway -> procurement-service',
+      code: false
+    },
+    {
+      q: 'How does Eureka help your microservices?',
+      a: 'Eureka acts as the service registry. When a service starts, it registers its name and instance details. Other services or the gateway can discover a healthy instance by service name instead of using a hard-coded host and port. This supports independent deployments and multiple instances, while health checks and timeouts help prevent traffic from being sent to unavailable instances.',
+      ex: 'API Gateway looks up PROCUREMENT-SERVICE in Eureka instead of calling http://10.0.0.15:8083 directly.',
+      code: false
+    },
+    {
+      q: 'What does the authorization service do?',
+      a: 'The authorization service manages authentication and access decisions for users and portal roles. After login, it issues or validates a JWT containing the required identity and permissions. The gateway performs the first check, and individual services also enforce authorization for sensitive operations so that a request cannot bypass security by calling an internal route directly.',
+      ex: 'A procurement officer may create a lot, while a payment role may approve payment; both permissions are checked before the operation is executed.',
+      code: false
+    },
+    {
+      q: 'Why do you have both a dropdown service and a master service?',
+      a: 'The dropdown service provides reusable lists needed by the screens, such as states, districts, crop types, seasons, and status values. The master service manages relatively stable business master data and its administration rules. Separating them avoids duplicating lookup logic in every portal and allows Angular screens to load common values through consistent APIs with caching where appropriate.',
+      ex: 'GET /api/dropdowns/crops?season=KHARIF returns the crop options used by farmer and procurement forms.',
+      code: false
+    },
+    {
+      q: 'What is the responsibility of the farmer registration service?',
+      a: 'The farmer registration service manages the farmer registration lifecycle, validation, profile details, and registration status. It coordinates Aadhaar verification and can use AgriStack data where required, but it keeps the farmer business rules in one place. Other services request verified farmer information through its API rather than duplicating registration logic.',
+      ex: 'Register farmer -> validate identity -> verify location and basic details -> save registration -> return registration number',
+      code: false
+    },
+    {
+      q: 'How does the procurement service support NAFED and NCCF?',
+      a: 'The procurement service supports procurement-specific business operations such as creating or validating lots, recording collection details, tracking dispatch, and coordinating payment eligibility. It consumes common farmer and crop information from PM-AASHA, applies procurement rules, and exposes APIs for the portal UI. The service keeps its workflow state so a lot can move through collection, dispatch, and payment stages with an auditable history.',
+      ex: 'Lot created -> collection confirmed -> dispatch recorded -> quantity verified -> payment submitted',
+      code: false
+    },
+    {
+      q: 'How is the notification service used?',
+      a: 'The notification service centralizes notifications generated by registration, procurement, dispatch, and payment workflows. Business services publish a notification request or event instead of implementing SMS, email, or message-template logic themselves. This keeps user-facing workflows responsive and lets notification retries be handled independently when an external provider is temporarily unavailable.',
+      ex: 'Payment approved -> PaymentApproved event -> notification service sends an SMS or email to the registered user.',
+      code: false
+    },
+    {
+      q: 'How do you integrate Aadhaar with the application?',
+      a: 'A dedicated Aadhaar integration service isolates the external Aadhaar contract from the farmer registration service. It validates request data, handles authentication and timeouts, maps the external response to an internal model, and avoids exposing provider-specific details to the frontend. Sensitive identity information is protected and excluded from normal application logs. If the provider is unavailable, the registration flow returns a controlled pending or retryable status.',
+      ex: 'Farmer Registration Service -> Aadhaar Integration Service -> Aadhaar provider -> verified or pending result',
+      code: false
+    },
+    {
+      q: 'What is the role of the AgriStack integration service?',
+      a: 'The AgriStack integration service provides a boundary for communicating with AgriStack-related APIs. It maps external farmer, land, or agriculture identifiers into the internal model, validates responses, and handles provider-specific authentication, retries, and error codes. Keeping this integration separate means changes in the external contract do not spread across farmer registration and procurement services.',
+      ex: 'Internal farmer ID + required identifiers -> AgriStack Integration Service -> normalized farmer or land response',
+      code: false
+    },
+    {
+      q: 'How do you integrate the Gujarat state portal?',
+      a: 'The Gujarat state portal is integrated through a dedicated adapter or integration flow rather than being called directly from the Angular application. The integration service converts our request into the state portal format, calls the external endpoint securely, validates the response, and maps it into a stable internal response. We record a reference number and correlation ID so an external transaction can be reconciled later.',
+      ex: 'Internal dispatch request -> Gujarat portal adapter -> state reference number -> stored integration status',
+      code: false
+    },
+    {
+      q: 'How is PMFBY integrated into the project?',
+      a: 'The PMFBY integration is isolated behind a service boundary that handles its authentication, request mapping, response mapping, and status tracking. The core procurement or farmer workflow does not depend on PMFBY-specific fields everywhere. We use timeouts and retry rules for temporary failures, and a pending status when the external system accepts a request but responds asynchronously.',
+      ex: 'Crop and farmer details -> PMFBY service -> insurance reference number -> status tracked for reconciliation',
+      code: false
+    },
+    {
+      q: 'How do you integrate the UP-BhuLekh service?',
+      a: 'The UP-BhuLekh integration service isolates land-record lookups and the external authentication or request format. It validates the location and land identifiers before making the call, converts the response into a common internal structure, and returns a clear result such as verified, not found, or pending. This keeps external availability issues from causing an uncontrolled failure in the farmer registration screen.',
+      ex: 'District + tehsil + village + land identifier -> UP-BhuLekh service -> normalized land verification response',
+      code: false
+    },
+    {
+      q: 'How do you handle external API failures and slow responses?',
+      a: 'Every external integration has a connection timeout, read timeout, bounded retry policy, and meaningful error mapping. I do not retry every error: validation failures are returned immediately, while transient network failures may be retried with backoff. For slow or asynchronous providers, I save a transaction reference and return a pending status instead of making the user wait indefinitely. Logs contain the provider, operation, status, and trace ID without exposing sensitive payloads.',
+      ex: 'External timeout -> save PENDING status -> retry through a controlled job -> update result -> notify the user',
+      code: false
+    },
+    {
+      q: 'How do you keep farmer data consistent between PM-AASHA and procurement portals?',
+      a: 'PM-AASHA remains the source of truth for common farmer and crop registration. NAFED and NCCF retrieve verified data through versioned APIs and store only the procurement-specific reference or snapshot they need for their workflow. We validate the farmer status before important operations and use a synchronization or reconciliation process for updates. This avoids conflicting edits while still allowing procurement transactions to continue with an auditable record.',
+      ex: 'PM-AASHA farmer status = VERIFIED -> procurement service permits lot creation; status changes are rechecked before payment.',
+      code: false
+    },
+    {
+      q: 'How would you explain a complete request flow from the UI?',
+      a: 'For a farmer registration request, Angular sends the form to the API Gateway. The gateway validates the JWT and routes the request to the farmer registration service. That service validates the input, calls the Aadhaar or AgriStack integration when required, saves the registration in the PM-AASHA common database, and publishes a notification request. The response returns through the gateway with a registration number, status, and trace ID that can be used to investigate the request.',
+      ex: 'Angular -> API Gateway -> Authorization -> Farmer Registration -> Aadhaar/AgriStack -> PM-AASHA DB -> Notification',
+      code: false
+    },
+    {
+      q: 'How would you explain a procurement and payment request flow?',
+      a: 'For procurement, the user works through the NAFED or NCCF portal. The request passes through the API Gateway to the procurement service, which validates the farmer and crop information from PM-AASHA, creates the lot, and tracks collection and dispatch. After quantity and business validations are complete, the payment step creates a payment request and records its status. Notifications and external integrations are handled independently so the core portal response remains fast and traceable.',
+      ex: 'NAFED/NCCF UI -> Gateway -> Procurement Service -> PM-AASHA verification -> lot collection -> dispatch -> payment -> notification',
+      code: false
+    },
+    {
+      q: 'What example can you give of improving an API response in this project?',
+      a: 'For a farmer or procurement search API, I would first inspect the trace and database timing to find whether the delay comes from a query, an external integration, or an oversized response. I improve it by returning a purpose-built DTO, selecting only required fields, adding pagination and indexes, caching dropdown or master data, and moving notification work out of the request thread. For external verification, I return a clear PENDING status when appropriate rather than keeping the browser request open.',
+      ex: 'Before: farmer search loaded full farmer, crop, and history objects. After: paged FarmerSummary DTO + indexed search + cached dropdowns reduced payload size and latency.',
+      code: false
+    }
+  ];
+
+  renderQuestions(projectQuestions, 'questionContainer', 'qcount');
+</script>
+
+</body>
+</html>

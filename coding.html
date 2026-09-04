@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coding Interview Practice | Interview Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="brand">Interview<span>Prep</span><span> by Rajendra Jakku</span></a>
+    <div class="navlinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="cv.html">My CV</a>
+      <a href="java.html">Java</a>
+      <a href="springboot.html">Spring Boot</a>
+      <a href="microservices.html">Microservices</a>
+      <a href="database.html">Database</a>
+      <a href="angular.html">Angular</a>
+      <a href="projects.html">Project Questions</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="aws.html">AWS</a>
+      <a href="coding.html">Coding Practice</a>
+      <a href="kafka.html">Kafka</a>
+    </div>
+  </div>
+</nav>
+<div class="pagehead">
+  <p class="eyebrow">CODING PRACTICE</p>
+  <h1>Frequently asked coding problems</h1>
+  <p>Practice the problem-solving patterns most often used in Java full stack interviews, with explanations, complexity, edge cases, and examples.</p>
+  <span class="count" id="qcount">50 questions</span>
+</div>
+<div class="controls"><div class="search-wrap"><input type="text" id="searchInput" placeholder="Search problems, explanations, or patterns..."></div><button class="btn" id="expandAll">Expand all</button><button class="btn" id="collapseAll">Collapse all</button></div>
+<div class="qlist"><div id="questionContainer"></div></div>
+<footer>Part of the Full Stack Java Developer interview prep reference. <a href="index.html">Back to all topics</a></footer>
+<script src="app.js"></script>
+<script>
+const codingQuestions = [
+{q:'Two Sum: find two numbers that add to a target.',a:'Store each number and its index in a HashMap. For the current value, look for target - value before inserting the current value. This handles duplicates correctly and avoids the O(n²) nested loop. Time is O(n), space is O(n).',ex:'Input: [2, 7, 11, 15], target 9 -> output indices [0, 1]. Pattern: hash map lookup.'},
+{q:'Find the first non-repeating character in a string.',a:'Count every character in a first pass, then scan the string again and return the first character with count one. Two passes are still O(n), and the second scan preserves the original order.',ex:'Input: "swiss" -> output: w. Edge case: return an empty result when every character repeats.'},
+{q:'Check whether two strings are anagrams.',a:'If case and spaces are defined by the problem, normalize them first. Then compare character frequencies using an array for a known alphabet or a HashMap for general characters. Time is O(n).',ex:'"listen" and "silent" -> true; "rat" and "car" -> false.'},
+{q:'Reverse a string without using a library reverse method.',a:'Use two pointers from the beginning and end, swap characters, and move inward. In Java, convert to a char array because String is immutable. Time is O(n), space is O(n) for the array.',ex:'Input: "hello" -> "olleh". Pattern: two pointers.'},
+{q:'Check whether a string is a palindrome.',a:'Compare characters at the left and right pointers while moving toward the center. If the problem ignores punctuation or case, normalize or skip those characters according to the requirement.',ex:'"A man, a plan, a canal: Panama" -> true after normalization.'},
+{q:'Find the longest substring without repeating characters.',a:'Use a sliding window and a map from character to its latest index. When a duplicate appears inside the window, move the left pointer beyond its previous index. Each character is processed at most twice, so time is O(n).',ex:'Input: "abcabcbb" -> output length 3, substring "abc". Pattern: sliding window.'},
+{q:'Find the longest palindromic substring.',a:'Expand around every possible center. Check both odd centers such as "aba" and even centers such as "abba", then keep the longest range. This straightforward solution is O(n²) time and O(1) extra space.',ex:'Input: "babad" -> "bab" or "aba".'},
+{q:'Group a list of words that are anagrams.',a:'Create a canonical key for each word, such as sorted characters or a 26-count signature, and map that key to a list. Words with the same key belong to one group. Sorting gives O(k log k) per word.',ex:'["eat", "tea", "tan", "ate", "nat", "bat"] -> [[eat, tea, ate], [tan, nat], [bat]].'},
+{q:'Find the most frequent character or element.',a:'Count values with a HashMap and track the highest count. If ties have a required order, keep the first occurrence or sort explicitly rather than relying on map iteration order.',ex:'Input: [1, 3, 1, 2, 1, 3] -> 1 with frequency 3.'},
+{q:'Implement string compression.',a:'Scan consecutive equal characters, count the run, and append the character plus count. Return the original string when compression does not make it shorter if that is part of the requirement.',ex:'"aaabbc" -> "a3b2c1". Pattern: run-length encoding.'},
+{q:'Move all zeroes to the end of an array.',a:'Keep a write pointer for the next non-zero value. Copy non-zero values forward, then fill the remaining positions with zero. This is in-place, O(n) time, and preserves non-zero order.',ex:'[0, 1, 0, 3, 12] -> [1, 3, 12, 0, 0].'},
+{q:'Find the maximum subarray sum.',a:'Kadane algorithm tracks the best sum ending at the current position and the best sum seen globally. Either extend the current subarray or start at the current value. Time is O(n), space O(1).',ex:'[-2, 1, -3, 4, -1, 2, 1, -5, 4] -> 6 from [4, -1, 2, 1].'},
+{q:'Find the missing number from 0 to n.',a:'Use the expected arithmetic sum minus the actual sum, or XOR all indexes and values so matching values cancel. XOR avoids integer sum overflow concerns.',ex:'[3, 0, 1] -> 2. XOR solution uses O(n) time and O(1) space.'},
+{q:'Find duplicate values in an array.',a:'Use a HashSet and add each value. If add returns false, the value has already appeared. For a constrained array with values from 1 to n, an index-marking or cycle approach can use O(1) extra space.',ex:'[4, 3, 2, 7, 8, 2, 3, 1] -> duplicates 2 and 3.'},
+{q:'Merge overlapping intervals.',a:'Sort intervals by start time, then compare each interval with the last merged interval. Extend the end when they overlap; otherwise start a new interval. Complexity is O(n log n) because of sorting.',ex:'[[1,3], [2,6], [8,10], [9,12]] -> [[1,6], [8,12]].'},
+{q:'Find the product of an array except self.',a:'Build prefix products into the result, then multiply by suffix products in a reverse pass. This avoids division and handles zero values. Time O(n), extra space O(1) beyond the output.',ex:'[1, 2, 3, 4] -> [24, 12, 8, 6]. Pattern: prefix and suffix.'},
+{q:'Rotate an array by k positions.',a:'Normalize k with k modulo n. The in-place reversal solution reverses the whole array, then reverses the first k and remaining n-k elements. Time O(n), space O(1).',ex:'[1,2,3,4,5,6,7], k=3 -> [5,6,7,1,2,3,4].'},
+{q:'Search for a value in a rotated sorted array.',a:'Use modified binary search. At every midpoint, one half is sorted; determine whether the target belongs to that range, then discard the other half. Time is O(log n) when values are distinct.',ex:'[4,5,6,7,0,1,2], target 0 -> index 4.'},
+{q:'Find the first and last position of a target in a sorted array.',a:'Run binary search twice: once for the first index by continuing left after a match, and once for the last by continuing right. Complexity is O(log n).',ex:'[5,7,7,8,8,10], target 8 -> [3,4].'},
+{q:'Find the top k frequent elements.',a:'Count with a map and use a min-heap of size k, or bucket values by frequency for linear-time average behavior. The heap approach is O(n log k).',ex:'[1,1,1,2,2,3], k=2 -> [1,2]. Pattern: frequency map plus heap.'},
+{q:'Find the kth largest element.',a:'Maintain a min-heap of size k, removing the smallest when the heap grows beyond k. The root is the kth largest. Average quickselect can be O(n), while the heap solution is O(n log k).',ex:'[3,2,1,5,6,4], k=2 -> 5.'},
+{q:'Find the intersection of two arrays.',a:'For unique intersection, put one array in a HashSet and check the second. For duplicate-aware intersection, count values in a map and decrement counts as matches are found.',ex:'[1,2,2,1] and [2,2] -> [2,2] for multiset intersection.'},
+{q:'Sort an array containing only 0, 1, and 2.',a:'Use the Dutch National Flag algorithm with low, current, and high pointers. Values less than one move left, values greater than one move right, and ones stay in the middle. O(n) time and O(1) space.',ex:'[2,0,2,1,1,0] -> [0,0,1,1,2,2].'},
+{q:'Merge two sorted arrays.',a:'Use two pointers and copy the smaller current value into a result. If the output must fit into the first array, fill it from the end so existing values are not overwritten.',ex:'[1,2,4] + [1,3,4] -> [1,1,2,3,4].'},
+{q:'Implement a queue using two stacks.',a:'Use an input stack for enqueue and an output stack for dequeue. Move elements only when the output stack is empty; each element moves at most twice, giving amortized O(1) operations.',ex:'enqueue 1,2,3; dequeue -> 1, then 2. Pattern: amortized analysis.'},
+{q:'Implement a stack that returns the minimum in O(1).',a:'Keep a second stack of minimum values. On push, add the value when it is less than or equal to the current minimum; on pop, remove the matching minimum.',ex:'push 3, 5, 2 -> getMin() returns 2; pop -> getMin() returns 3.'},
+{q:'Reverse a singly linked list.',a:'Iterate with previous, current, and next references. Save next before changing current.next, reverse the pointer, and advance. Time O(n), space O(1).',ex:'1 -> 2 -> 3 -> null becomes 3 -> 2 -> 1 -> null.'},
+{q:'Detect a cycle in a linked list.',a:'Use Floyd’s slow and fast pointers. If they meet, a cycle exists; if fast reaches null, it does not. This uses O(n) time and O(1) space.',ex:'1 -> 2 -> 3 -> 4 -> points back to 2 -> cycle detected.'},
+{q:'Find the middle node of a linked list.',a:'Move slow one node and fast two nodes at a time. When fast reaches the end, slow is at the middle. Decide whether an even list should return the first or second middle.',ex:'1 -> 2 -> 3 -> 4 -> 5 -> middle is 3.'},
+{q:'Merge two sorted linked lists.',a:'Use a dummy head and repeatedly attach the smaller node from the two lists. Attach the remaining list at the end. Time O(m+n), space O(1) excluding the returned nodes.',ex:'1 -> 3 -> 5 and 2 -> 4 -> 6 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6.'},
+{q:'Find the kth node from the end of a linked list.',a:'Move a fast pointer k steps ahead, then move fast and slow together until fast reaches the end. The gap keeps slow at the required node.',ex:'1 -> 2 -> 3 -> 4 -> 5, k=2 -> node 4.'},
+{q:'Validate balanced parentheses.',a:'Push opening brackets onto a stack. For every closing bracket, check that the stack is non-empty and the top is the matching opening bracket. The stack must be empty at the end.',ex:'"{[()]}" -> true; "([)]" -> false.'},
+{q:'Evaluate a postfix expression.',a:'Read tokens left to right. Push numbers; on an operator, pop the right operand then left operand, calculate, and push the result. A stack naturally handles precedence encoded by postfix order.',ex:'["2", "1", "+", "3", "*"] -> 9.'},
+{q:'Binary tree level-order traversal.',a:'Use a queue. Process the current queue size as one level, add each node’s children, and continue until empty. Time O(n), space O(w), where w is maximum width.',ex:'Tree [3,9,20,null,null,15,7] -> [[3],[9,20],[15,7]].'},
+{q:'Find the maximum depth of a binary tree.',a:'Recursively return one plus the maximum depth of the left and right subtrees, with null depth zero. An iterative BFS can count levels. Time O(n).',ex:'Tree 1 -> 2,3 -> 4 has depth 3.'},
+{q:'Validate a binary search tree.',a:'Pass lower and upper bounds during recursion rather than checking only parent-child relationships. Every node must be strictly within the bounds defined by its ancestors.',ex:'[5,1,4,null,null,3,6] -> false because 3 is in the right subtree of 5.'},
+{q:'Find the lowest common ancestor in a binary search tree.',a:'If both values are smaller, move left; if both are larger, move right. Otherwise the current node is the split point and is the lowest common ancestor. O(h).',ex:'BST 6,2,8 with values 2 and 8 -> ancestor 6.'},
+{q:'Find the kth smallest value in a BST.',a:'In-order traversal visits a BST in sorted order. Stop when the kth node is visited. Use recursion or an explicit stack; complexity is O(h+k) for early stopping.',ex:'BST values [3,1,4,2], k=1 -> 1.'},
+{q:'Count connected islands in a grid.',a:'Scan cells; when an unvisited land cell is found, run DFS or BFS and mark all connected land. Each cell is visited once, so time O(rows * columns).',ex:'Grid 110/110/001 -> 1 island; use four-direction movement.'},
+{q:'Find the shortest path in an unweighted graph.',a:'Breadth-first search explores nodes by distance, so the first time the target is reached gives the shortest number of edges. Track visited nodes to avoid cycles.',ex:'For a word transformation graph, BFS finds the minimum number of transformations.'},
+{q:'Detect a cycle in a directed graph.',a:'Use DFS with three states: unvisited, visiting, and completed. Reaching a visiting node means a back edge and therefore a cycle. Kahn’s topological-sort approach is another option.',ex:'Course prerequisite A -> B -> A -> cycle, so the schedule is impossible.'},
+{q:'Perform topological sorting.',a:'For a DAG, calculate indegrees and enqueue nodes with indegree zero. Remove them and decrement neighbors. If fewer than all nodes are processed, a cycle exists.',ex:'Build dependencies compile -> test -> package -> deploy.'},
+{q:'Implement an LRU cache.',a:'Combine a HashMap for O(1) lookup with a doubly linked list for O(1) removal and insertion. Keep most recently used entries near the head and evict from the tail.',ex:'capacity 2: put A, put B, get A, put C -> B is evicted.'},
+{q:'Solve the climbing stairs problem.',a:'The ways to reach step n equal ways(n-1) plus ways(n-2), so it is Fibonacci-style dynamic programming. Keep only the previous two values for O(1) space.',ex:'n=4 -> 5 ways: 1+1+1+1, 1+1+2, 1+2+1, 2+1+1, 2+2.'},
+{q:'Solve the coin change problem.',a:'Define dp[amount] as the minimum coins needed. For every amount, try each coin and use dp[amount-coin] + 1. Time is O(amount * number of coins).',ex:'coins [1,2,5], amount 11 -> 3 using 5+5+1.'},
+{q:'Find the length of the longest increasing subsequence.',a:'The O(n²) dynamic-programming solution stores the best subsequence ending at each index. A patience-sorting style tails array improves it to O(n log n), but the tails values are not the final subsequence themselves.',ex:'[10,9,2,5,3,7,101,18] -> length 4, such as [2,3,7,101].'},
+{q:'Solve 0/1 knapsack.',a:'For each item, choose to skip it or include it if capacity permits. A one-dimensional DP array updated from high capacity to low prevents reusing the same item.',ex:'Each product can be selected at most once; maximize value under a weight limit.'},
+{q:'Find the longest common subsequence of two strings.',a:'If the current characters match, use one plus the diagonal result. Otherwise use the maximum of dropping one character from either string. The table gives O(mn) time.',ex:'"abcde" and "ace" -> length 3, subsequence "ace".'},
+{q:'Implement factorial safely.',a:'Use an iterative loop for normal interview input to avoid unnecessary recursion. Clarify behavior for zero and negative values and consider overflow because factorial grows rapidly.',ex:'factorial(0)=1, factorial(5)=120. Use long only within its safe range.'},
+{q:'Check whether a number is prime.',a:'Numbers below two are not prime. Try divisors only through the square root because any larger factor has a paired smaller factor. Time is O(sqrt(n)).',ex:'29 -> prime; 30 -> not prime. Skip even divisors after checking 2.'},
+{q:'Generate Fibonacci numbers.',a:'Use two variables iteratively instead of naive recursion, which repeats subproblems exponentially. For a full sequence, append the next value; for one value, keep O(1) space.',ex:'n=7 -> 0,1,1,2,3,5,8.'},
+{q:'How should you explain a coding solution in an interview?',a:'Clarify inputs, outputs, constraints, duplicates, ordering, and invalid cases first. Describe a brute-force idea, improve it with the relevant pattern, walk through an example, state time and space complexity, then code and test edge cases.',ex:'Explain: approach -> invariant -> dry run -> complexity -> implementation -> tests.'}
+];
+renderQuestions(codingQuestions, 'questionContainer', 'qcount');
+</script>
+</body>
+</html>

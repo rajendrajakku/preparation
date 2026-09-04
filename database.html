@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database & SQL Interview Questions | Interview Prep</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="brand">Interview<span>Prep</span><span> by Rajendra Jakku</span></a>
+    <div class="navlinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="cv.html">My CV</a>
+      <a href="java.html">Java</a>
+      <a href="springboot.html">Spring Boot</a>
+      <a href="microservices.html">Microservices</a>
+      <a href="database.html">Database</a>
+      <a href="angular.html">Angular</a>
+      <a href="projects.html">Project Questions</a>
+      <a href="cicd.html">CI/CD</a>
+      <a href="aws.html">AWS</a>
+      <a href="coding.html">Coding Practice</a>
+      <a href="kafka.html">Kafka</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pagehead">
+  <p class="eyebrow">DATABASE & SQL</p>
+  <h1>Database & SQL Interview Questions</h1>
+  <p>SQL fundamentals, joins, indexing, query optimization, transactions, normalization, and NoSQL basics.</p>
+  <span class="count" id="qcount">103 questions</span>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search questions, answers, or code...">
+  </div>
+  <button class="btn" id="expandAll">Expand all</button>
+  <button class="btn" id="collapseAll">Collapse all</button>
+</div>
+
+<div class="qlist">
+  <div id="questionContainer"></div>
+</div>
+
+<footer>
+  Part of the Full Stack Java Developer interview prep reference. <a href="index.html">Back to all topics</a>
+</footer>
+
+<script src="data-database.js"></script>
+<script src="app.js"></script>
+<script>
+  renderQuestions(databaseData, 'questionContainer', 'qcount');
+</script>
+
+</body>
+</html>
